@@ -1,1 +1,0 @@
-# hyperbolic-geometry2-app
