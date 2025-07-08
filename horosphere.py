@@ -148,7 +148,7 @@ def create_orosphere_figure(phi_deg, theta_deg, k_prime, show_guiding_lines=True
     else: scene_settings['camera_eye'] = initial_camera_eye
 
     fig.update_layout(
-        title='Интерактивная модель орисферы в модели Клейна (исправлено)',
+        title='Интерактивная модель орисферы',
         scene=scene_settings, margin=dict(l=0, r=0, b=0, t=40),
         legend=dict(x=0.01, y=0.99),
         font=dict(family="Arial, sans-serif", size=12, color="black")
