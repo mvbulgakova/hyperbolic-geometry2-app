@@ -219,5 +219,9 @@ def update_figure(phi, theta, r_horo, n_clicks, relayoutData, current_visibility
     
     return fig, new_visibility_data
 
+# ==============================================================================
+# 4. ЗАПУСК ПРИЛОЖЕНИЯ
+# ==============================================================================
+server = app.server # <-- Добавили эту строку
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True) # <-- Изменили app.run_server на app.run
