@@ -4,30 +4,28 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
-# ==============================================================================
 # 1. ФУНКЦИЯ ДЛЯ СОЗДАНИЯ ГРАФИКА ОРИСФЕРЫ
-# ==============================================================================
 def create_orosphere_figure(phi_deg, theta_deg, k_prime, show_guiding_lines=True, current_camera=None):
     r = 1.0  # Радиус сферы-абсолюта
     
     phi_rad = np.deg2rad(phi_deg)
     theta_rad = np.deg2rad(theta_deg)
 
-    # Точка касания орисферы на Абсолюте.
+    # Точка касания орисферы на абсолюте.
     touch_point = np.array([
         r * np.cos(phi_rad) * np.sin(theta_rad),
         r * np.sin(phi_rad) * np.sin(theta_rad),
         r * np.cos(theta_rad)
     ])
     
-    # --- РАСЧЕТ ЭЛЛИПСОИДА ДЛЯ МОДЕЛИ БЕЛЬТРАМИ-КЛЕЙНА (ИСПРАВЛЕННЫЙ) ---
+    # РАСЧЕТ ЭЛЛИПСОИДА
     # k_prime - внутренний математический параметр. Больший k_prime = большая/глубокая орисфера.
     if k_prime < 1e-6: k_prime = 1e-6
 
-    # Канонические формулы для параметров эллипсоида, теперь правильные
+    # Канонические формулы для параметров эллипсоида
     center_ellipsoid = touch_point * (1 / (1 + k_prime))
     radius_parallel = k_prime / (1 + k_prime)
-    radius_perp = np.sqrt(k_prime) / np.sqrt(1 + k_prime) # <-- ВОТ ЗДЕСЬ БЫЛА ОШИБКА
+    radius_perp = np.sqrt(k_prime) / np.sqrt(1 + k_prime)
 
 
     fig = go.Figure()
@@ -40,7 +38,7 @@ def create_orosphere_figure(phi_deg, theta_deg, k_prime, show_guiding_lines=True
     z_abs = r * np.outer(np.ones_like(phi_surf), np.cos(theta_surf))
     fig.add_trace(go.Surface(x=x_abs, y=y_abs, z=z_abs, colorscale='Blues', opacity=0.15, showscale=False, name='Абсолют', hoverinfo='none'))
 
-    # Орисфера (Эллипсоид)
+    # Орисфера
     x_unit_sphere = np.outer(np.cos(phi_surf), np.sin(theta_surf))
     y_unit_sphere = np.outer(np.sin(phi_surf), np.sin(theta_surf))
     z_unit_sphere = np.outer(np.ones_like(phi_surf), np.cos(theta_surf))
@@ -76,7 +74,7 @@ def create_orosphere_figure(phi_deg, theta_deg, k_prime, show_guiding_lines=True
                                mode='markers', marker=dict(color='red', size=5, symbol='circle'),
                                name='Точка касания', showlegend=False, hoverinfo='none'))
 
-    # --- ГЕОДЕЗИЧЕСКИЕ (ПУЧОК ПРЯМЫХ) ---
+    # ГЕОДЕЗИЧЕСКИЕ
     num_lines_total = 50
     indices = np.arange(0, num_lines_total, dtype=float) + 0.5
     phi_end_vals_gs = np.arccos(1 - 2 * indices / num_lines_total) 
@@ -155,9 +153,8 @@ def create_orosphere_figure(phi_deg, theta_deg, k_prime, show_guiding_lines=True
     )
     return fig
 
-# ==============================================================================
 # 2. СОЗДАНИЕ ПРИЛОЖЕНИЯ DASH
-# ==============================================================================
+
 app = dash.Dash(__name__)
 
 app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'fontSize': '12px', 'color': 'black'}, children=[
@@ -185,9 +182,7 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'fontSize': '12p
     ])
 ])
 
-# ==============================================================================
 # 3. ЛОГИКА ОБНОВЛЕНИЯ ГРАФИКА
-# ==============================================================================
 @app.callback(
     Output('hyperbolic-orosphere-graph', 'figure'),
     Output('guiding-lines-visibility-store', 'data'),
@@ -219,9 +214,8 @@ def update_figure(phi, theta, r_horo, n_clicks, relayoutData, current_visibility
     
     return fig, new_visibility_data
 
-# ==============================================================================
 # 4. ЗАПУСК ПРИЛОЖЕНИЯ
-# ==============================================================================
-server = app.server # <-- Добавили эту строку
+
+server = app.server 
 if __name__ == '__main__':
-    app.run(debug=True) # <-- Изменили app.run_server на app.run
+    app.run(debug=True)
